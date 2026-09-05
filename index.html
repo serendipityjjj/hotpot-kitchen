@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>몽글몽글 훠궈 주방</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<style>
+:root {
+  --bg-cream: #fbf6ec;
+  --panel-bg: #fffdf9;
+  --line-brown: #4a3427;
+  --main-orange: #f25c2b;
+  --sub-yellow: #f8be39;
+  --light-yellow: #fff3d6;
+  --pot-rim: #2d1e18;
+  --text-dark: #3e271c;
+  --shadow-warm: 0 4px 0 #4a3427;
+}
+
+.zh {
+  font-family: FangSong, "仿宋", "STFangsong", "Noto Serif SC", serif !important;
+  font-feature-settings: "locl" 1;
+  -webkit-font-language-override: "ZHS";
+  font-language-override: "ZHS";
+}
+
+.py {
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg-cream);
+  color: var(--text-dark);
+  font-family: 'Jua', cursive, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+}
+
+/* 온보딩 모달 */
+.intro-modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(45, 30, 24, 0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000; padding: 16px;
+  backdrop-filter: blur(3px);
+}
+.intro-card {
+  max-width: 520px; width: 100%;
+  background: #fffdf9; border: 4px solid var(--line-brown);
+  border-radius: 26px; padding: 26px 22px; text-align: center;
+  box-shadow: 0 10px 0 var(--line-brown);
+  animation: popIn .25s ease-out;
+}
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.intro-card h2 {
+  margin: 6px 0 12px; color: var(--main-orange); font-size: 23px; line-height: 1.3;
+}
+.intro-card .sub-desc {
+  font-size: 15px; color: #6d4c41; line-height: 1.6; margin: 0 0 16px;
+}
+.intro-steps-summary {
+  background: #fff7eb; border: 2px dashed var(--main-orange);
+  border-radius: 18px; padding: 14px 16px; text-align: left;
+  font-size: 14.5px; line-height: 1.8; margin-bottom: 22px;
+}
+.intro-steps-summary div { margin-bottom: 4px; }
+.intro-steps-summary div:last-child { margin-bottom: 0; }
+
+.chef-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 3px solid var(--line-brown);
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-warm);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.chef-title { display: flex; align-items: center; gap: 8px; }
+.avatar-chef {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid var(--line-brown); background: var(--light-yellow);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.chef-title h1 { margin: 0; font-size: 21px; color: var(--line-brown); }
+
+.steps { display: flex; gap: 6px; }
+.steps span {
+  padding: 5px 12px; border-radius: 16px; border: 2px solid var(--line-brown);
+  background: #fff; cursor: pointer; font-size: 14.5px; box-shadow: 0 2px 0 var(--line-brown);
+  transition: all 0.15s; white-space: nowrap;
+}
+.steps span.on {
+  background: var(--main-orange); color: #fff; transform: translateY(2px); box-shadow: none;
+}
+
+.view { display: none; }
+.view.on { display: block; }
+.loading { text-align: center; padding: 50px 0; color: var(--line-brown); font-size: 18px; }
+
+/* 1단계 부수 */
+.rad-list { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.rad {
+  padding: 5px 12px; border-radius: 18px; border: 2px solid var(--line-brown);
+  background: #fff; cursor: pointer; font-size: 15px; display: flex; align-items: center; gap: 5px;
+  box-shadow: 0 2px 0 var(--line-brown);
+}
+.rad.on { background: var(--sub-yellow); color: var(--line-brown); }
+.rad.done { border-color: #48a05b; background: #eaf8ed; }
+
+.writer-card {
+  max-width: 460px; margin: 0 auto; background: var(--panel-bg);
+  border: 3px solid var(--line-brown); border-radius: 24px; padding: 16px;
+  text-align: center; box-shadow: var(--shadow-warm);
+}
+.writer-card .big { font-size: 40px; color: var(--main-orange); }
+.writer-card .py { font-size: 19px; color: var(--line-brown); font-weight: bold; }
+.mige {
+  width: 190px; height: 190px; margin: 10px auto; border-radius: 16px;
+  border: 3px solid var(--line-brown); background: #fff;
+  background-image:
+    linear-gradient(90deg, transparent calc(50% - 1px), #f5e4d2 50%, transparent calc(50% + 1px)),
+    linear-gradient(0deg, transparent calc(50% - 1px), #f5e4d2 50%, transparent calc(50% + 1px));
+  touch-action: none;
+}
+.hint { font-size: 14.5px; color: var(--main-orange); min-height: 18px; }
+.done-mark { color: #43a047; font-size: 15px; min-height: 20px; }
+.writer-card .desc { font-size: 14.5px; color: #795548; margin: 6px auto 12px; line-height: 1.5; }
+
+/* 2단계 조합 */
+.budget-bar-box {
+  background: #fff; border: 2px solid var(--line-brown); border-radius: 16px;
+  padding: 6px 12px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  box-shadow: 0 2px 0 var(--line-brown); font-size: 14.5px;
+}
+.gauge {
+  flex: 1; height: 10px; background: #ffeac7; border: 2px solid var(--line-brown);
+  border-radius: 99px; overflow: hidden;
+}
+.gauge i { display: block; height: 100%; background: var(--main-orange); width: 0; transition: width .25s; }
+
+.soup-guide-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 14.5px;
+  color: var(--line-brown);
+}
+.soup-guide-label b { color: var(--main-orange); font-size: 15.5px; }
+.soup-guide-label span { font-size: 13px; color: #795548; }
+
+.soups { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.soup {
+  display: flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 16px;
+  border: 2px solid var(--line-brown); background: #fff; cursor: pointer; font-size: 14px;
+  box-shadow: 0 2px 0 var(--line-brown); white-space: nowrap; transition: all .15s;
+}
+.soup .dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--line-brown); }
+.soup.on { background: var(--light-yellow); border-color: var(--main-orange); font-weight: bold; }
+.soup .zh { font-size: 15px; }
+.soup .py { font-size: 13.5px; color: #4a3427; }
+
+.stage {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+@media(max-width: 900px){
+  .stage { grid-template-columns: 1fr; }
+}
+
+.pot-container {
+  background: var(--panel-bg);
+  border: 3px solid var(--line-brown);
+  border-radius: 22px;
+  padding: 12px;
+  box-shadow: var(--shadow-warm);
+  text-align: center;
+}
+
+.pot {
+  position: relative;
+  width: 330px;
+  height: 330px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--pot-rim);
+  border: 8px solid #231610;
+  box-shadow: inset 0 0 14px rgba(0,0,0,0.6), 0 5px 0 rgba(74,52,39,0.25);
+}
+.broth {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  border: 2px solid rgba(0,0,0,0.3);
+}
+.broth .half {
+  flex: 1;
+  position: relative;
+  transition: filter 0.15s;
+}
+.broth .half.over {
+  filter: brightness(1.25);
+  outline: 3px dashed #fff;
+  outline-offset: -6px;
+}
+.broth .divider {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 10px; margin-left: -5px;
+  background: linear-gradient(#e5d5c0, #b2a08d);
+  border-left: 2px solid #5a483a; border-right: 2px solid #5a483a;
+  z-index: 3;
+}
+.pot-empty {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  z-index: 5; pointer-events: none;
+  line-height: 1.4;
+}
+
+.chunk {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  filter: drop-shadow(0 5px 8px rgba(0,0,0,0.45));
+  transition: transform .12s;
+  z-index: 10;
+}
+.chunk:hover { transform: translate(-50%, -50%) scale(1.12); }
+.chunk img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.chunk .fb { font-size: 46px; line-height: 1; pointer-events: none; }
+
+.pot-bottom-bar {
+  margin-top: 10px;
+  border-top: 2px dashed #d7ccc8;
+  padding-top: 8px;
+}
+.side {
+  display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  font-size: 13.5px; margin-bottom: 8px; min-height: 26px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; background: #fff;
+  border: 2px solid var(--line-brown); border-radius: 14px; padding: 3px 9px;
+  font-size: 13.5px; cursor: pointer; box-shadow: 0 2px 0 var(--line-brown);
+}
+.chip img { height: 18px; }
+
+.actions { display: flex; gap: 6px; justify-content: center; flex-wrap: nowrap; }
+button.btn {
+  font-family: 'Jua', cursive; font-size: 15px; padding: 6px 14px;
+  border-radius: 18px; border: 2px solid var(--line-brown); background: #fff;
+  cursor: pointer; box-shadow: 0 2px 0 var(--line-brown); transition: all .1s;
+  white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+}
+button.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line-brown); }
+button.btn.primary { background: var(--main-orange); color: #fff; }
+button.btn:disabled { opacity: 0.5; cursor: default; }
+
+/* 우측 재료 서랍 */
+.ingredient-drawer {
+  background: #fff; border: 3px solid var(--line-brown);
+  border-radius: 22px; padding: 10px; box-shadow: var(--shadow-warm);
+}
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  justify-content: space-between;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  padding: 5px 2px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line-brown);
+  background: #fff;
+  font-size: 12.5px;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+}
+.tab.on { background: var(--main-orange); color: #fff; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  max-height: 460px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.card {
+  position: relative; background: #fff; border: 2px solid var(--line-brown);
+  border-radius: 14px; padding: 6px 4px 8px; text-align: center;
+  cursor: grab; user-select: none;
+  box-shadow: 0 2px 0 var(--line-brown); transition: transform .15s, background .15s;
+}
+.card:hover { transform: translateY(-2px); }
+.card.in { background: var(--light-yellow); border-color: var(--main-orange); }
+.card.nodrag { cursor: pointer; }
+.card .thumb { height: 50px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.card .thumb img { max-height: 48px; max-width: 100%; object-fit: contain; }
+.card .thumb .fb { font-size: 30px; }
+.card .zh { font-size: 16px; font-weight: 700; color: var(--text-dark); pointer-events: none; margin-top: 2px; }
+.card .py { font-size: 13.5px; color: var(--main-orange); font-weight: bold; pointer-events: none; margin: 1px 0; }
+.card .ko { font-size: 13px; color: #8d6e63; pointer-events: none; }
+.card .price {
+  position: absolute; top: 3px; left: 3px; font-size: 11px;
+  background: #fff; border: 1px solid var(--line-brown); border-radius: 8px; padding: 1px 5px;
+}
+.card .chk {
+  position: absolute; top: 3px; right: 3px; width: 15px; height: 15px;
+  border-radius: 50%; background: var(--main-orange); color: #fff;
+  font-size: 10px; line-height: 15px; display: none;
+}
+.card.in .chk { display: block; }
+
+/* 3단계 미니 냄비 프리뷰 */
+.mini-pot-preview {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 10px auto;
+  border-radius: 50%;
+  background: var(--pot-rim);
+  border: 4px solid #231610;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.mini-broth {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+}
+.mini-broth .half { flex: 1; position: relative; }
+.mini-broth .divider {
+  position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; margin-left: -3px;
+  background: #c5b49d; z-index: 3;
+}
+.mini-chunk {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px; height: 32px;
+  z-index: 10;
+}
+.mini-chunk img { width: 100%; height: 100%; object-fit: contain; }
+
+/* 3단계 주문서 & 문장별 개별 카드 UI */
+.customer-card {
+  max-width: 760px; margin: 0 auto; background: #fff;
+  border: 3px solid var(--line-brown); border-radius: 24px; padding: 16px;
+  box-shadow: var(--shadow-warm);
+}
+.customer-dialogue {
+  background: #fdf5ea; border-radius: 16px; border: 2px solid var(--line-brown);
+  padding: 12px; margin-top: 10px; display: flex; gap: 10px; align-items: flex-start;
+}
+.result-box {
+  max-width: 760px; margin: 12px auto 0; background: var(--panel-bg);
+  border: 3px solid var(--line-brown); border-radius: 22px; padding: 16px;
+  box-shadow: var(--shadow-warm); display: none;
+}
+
+/* 문장별 분리 박스 */
+.sentence-card {
+  background: #fff; border: 2px solid var(--line-brown);
+  border-radius: 16px; padding: 12px 14px; margin-top: 10px;
+  box-shadow: 0 3px 0 var(--line-brown);
+}
+.sentence-card .tag-badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: var(--light-yellow); color: var(--main-orange); font-weight: bold; margin-bottom: 6px;
+  border: 1px solid var(--main-orange);
+}
+.sentence-card .zh { font-size: 21px; font-weight: 700; color: var(--main-orange); margin: 2px 0; line-height: 1.35; }
+.sentence-card .py { font-size: 15.5px; color: #55382b; font-weight: 600; margin-bottom: 4px; }
+.sentence-card .ko { font-size: 13.5px; color: #795548; margin-bottom: 8px; }
+.sentence-card .row-actions { display: flex; gap: 6px; align-items: center; }
+
+.section-item {
+  background: #fff; border: 2px solid var(--line-brown); border-radius: 12px;
+  padding: 9px 13px; margin-top: 8px; font-size: 14.5px; line-height: 1.6; color: var(--text-dark);
+}
+.section-item .zh {
+  font-size: 14.5px !important; font-weight: 600 !important;
+  color: var(--text-dark) !important; margin: 0 !important; display: inline !important;
+}
+
+.mic-out {
+  margin-top: 6px; font-size: 13.5px; line-height: 1.5; color: var(--line-brown);
+  background: #fdf6ec; border-radius: 10px; padding: 6px 10px; display: none;
+}
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+  background: var(--line-brown); color: #fff; padding: 8px 16px; border-radius: 16px;
+  font-size: 14px; display: none; z-index: 120;
+}
+</style>
+</head>
+<body>
+
+<!-- 온보딩 시작 모달 -->
+<div class="intro-modal-bg" id="introModal">
+  <div class="intro-card">
+    <div style="font-size: 46px; margin-bottom: 4px;">🍲</div>
+    <h2>나만의 특별한 훠궈를 만들어 볼까요?</h2>
+    <p class="sub-desc">훠궈 재료 속에 숨은 한자의 원리를 배우고<br>직접 주문해 보는 체험 활동입니다.</p>
+    
+    <div class="intro-steps-summary">
+      <div><b>1단계 ✏️ 부수 쓰기:</b> 냄비(钅), 국물(氵), 고기(月) 등 핵심 부수 익히기</div>
+      <div><b>2단계 🥢 재료 조합:</b> 350元 예산 안에서 원하는 탕과 재료를 골라 퐁당!</div>
+      <div><b>3단계 📢 주문 실습:</b> AI 셰프의 문장을 문장별로 듣고 따라 말해보기</div>
+    </div>
+    
+    <button class="btn primary" style="font-size:17.5px; padding:10px 28px;" onclick="closeIntro()">✨ 훠궈 주방 입장하기</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="chef-header">
+    <div class="chef-title">
+      <div class="avatar-chef">🍲</div>
+      <h1>몽글몽글 훠궈 주방</h1>
+    </div>
+    <div class="steps">
+      <span id="s1" class="on" onclick="go(1)">1. 부수 쓰기 ✏️</span>
+      <span id="s2" onclick="go(2)">2. 훠궈 조합 🥢</span>
+      <span id="s3" onclick="go(3)">3. 주문 말하기 📢</span>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">구글 시트에서 신선한 재료를 가져오고 있어요… 🥣</div>
+
+  <!-- 1단계: 부수 쓰기 -->
+  <section class="view" id="v1">
+    <div class="rad-list" id="radList"></div>
+    <div class="writer-card">
+      <div>
+        <span class="big zh" id="radChar" lang="zh-CN"></span> 
+        <span class="py" id="radPy"></span>
+      </div>
+      <div class="meta">
+        <b class="zh" id="radBadge" lang="zh-CN"></b> · <span id="radName"></span> · <span id="radKo"></span>
+      </div>
+      <div class="mige" id="mige"></div>
+      <div class="hint" id="hint">순서대로 획을 그어보세요!</div>
+      <div class="done-mark" id="doneMark"></div>
+      <div class="prog" id="prog" style="font-size:13.5px; color:#8d6e63; margin-top:4px;"></div>
+      <p class="desc" id="radDesc"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn" onclick="animateChar()">획순 보기 👀</button>
+        <button class="btn" onclick="resetChar()">다시 쓰기</button>
+        <button class="btn primary" onclick="nextRadical()" id="nextRad">다음 부수 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2단계: 훠궈 조합 -->
+  <section class="view" id="v2">
+    <div class="budget-bar-box">
+      <span>지갑 <b><span id="total">¥0</span> / 350元</b></span>
+      <span class="gauge"><i id="bar"></i></span>
+      <span id="left" style="font-size:13.5px; color:#6d4c41;">남은 금액 ¥350</span>
+    </div>
+    
+    <div class="soup-guide-label">
+      <span><b>🍲 탕 베이스 선택:</b> 2가지를 골라 반반 원앙탕을 만드세요!</span>
+      <span>(원하는 탕을 클릭하여 변경)</span>
+    </div>
+    <div class="soups" id="soups"></div>
+
+    <div class="stage">
+      <div class="pot-container">
+        <div class="pot" id="pot">
+          <div class="broth" id="broth">
+            <div class="half" id="halfL"></div>
+            <div class="half" id="halfR"></div>
+            <div class="divider"></div>
+          </div>
+          <div class="pot-empty" id="potEmpty">원하는 재료를 드래그해서<br>탕 위에 가져다 놓으세요! 🍲</div>
+        </div>
+        
+        <div class="pot-bottom-bar">
+          <div class="side" id="side"></div>
+          <div class="actions">
+            <button class="btn" onclick="clearPot()">냄비 비우기 🧹</button>
+            <button class="btn primary" onclick="go(3)">주문서 만들기 🔔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ingredient-drawer">
+        <div class="tabs" id="tabs"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3단계: 주문서 & 연습 -->
+  <section class="view" id="v3">
+    <div class="customer-card">
+      <div style="font-size:16.5px; color:var(--line-brown);">🔔 주문서 확인</div>
+      
+      <div class="mini-pot-preview" id="miniPot">
+        <div class="mini-broth">
+          <div class="half" id="miniHalfL"></div>
+          <div class="half" id="miniHalfR"></div>
+          <div class="divider"></div>
+        </div>
+      </div>
+
+      <div class="customer-dialogue">
+        <div style="font-size:32px;">👧</div>
+        <div style="flex:1;">
+          <b id="rcTitle"></b>
+          <div id="rcItems" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+        </div>
+      </div>
+      <div class="actions" style="justify-content:flex-end; margin-top:14px;">
+        <button class="btn" onclick="go(2)">재료 더 담기</button>
+        <button class="btn primary" id="askBtn" onclick="askAI()">주문 전송하기 🚀</button>
+      </div>
+    </div>
+    <div class="result-box" id="result"></div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const MAX = 350;
+const SIDE_CATS = ['drink'];
+let MENU = null, cat = 'all', soups = [], pot = [];
+let radIdx = 0, writer = null, doneRad = {};
+let activeRecog = null, activeBtn = null;
+
+/* 구글 스프레드시트 배포 API 주소 연동 */
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzgZXf_MxpDqSY_8RLbmdRqdZwOEClquf2ON3PpX2lUAtgPUDjip9eKCb82FZzzJvXZ/exec';
+
+/* 네트워크 지연이나 오류 대비 정적 기본 데이터 */
+const DEFAULT_MENU = {
+  ingredients: [
+    {id:'beef',cat:'meat',zh:'牛肉',py:'niúròu',ko:'소고기',price:48,emoji:'🥩',imageUrl:'https://lh3.googleusercontent.com/d/1ISCMgze9VvRSRehYKZqFVKaT7yWuvKkE=w400',scale:1.0,sort:1},
+    {id:'lamb',cat:'meat',zh:'羊肉',py:'yángròu',ko:'양고기',price:52,emoji:'🐑',imageUrl:'https://lh3.googleusercontent.com/d/1pBOZb7GifxmW06SPnfvswA_uF3LIIjtM=w400',scale:1.0,sort:2},
+    {id:'tripe',cat:'offal',zh:'毛肚',py:'máodǔ',ko:'소 천엽',price:49,emoji:'🫓',imageUrl:'https://lh3.googleusercontent.com/d/1AFGtp9K2vNgAMqfLYe7WRa0tX_FyW1wk=w400',scale:1.0,sort:3},
+    {id:'duck_intestine',cat:'offal',zh:'鸭肠',py:'yācháng',ko:'오리 창자',price:44,emoji:'🪢',imageUrl:'https://lh3.googleusercontent.com/d/1wK5tVtbr9Qg8v4RyXVu121mH89pse2ny=w400',scale:1.0,sort:4},
+    {id:'duck_blood',cat:'offal',zh:'鸭血',py:'yāxuè',ko:'오리 선지',price:24,emoji:'🩸',imageUrl:'https://lh3.googleusercontent.com/d/1hHcLN1kP8tkrfhOB5R6e68Zx87a0bR4N=w400',scale:0.9,sort:5},
+    {id:'shrimp_paste',cat:'ball',zh:'虾滑',py:'xiāhuá',ko:'새우 완자',price:68,emoji:'🍤',imageUrl:'https://lh3.googleusercontent.com/d/1fyNARYVz5oeI6BMY3Wauv80xwfykKLbi=w400',scale:0.95,sort:6},
+    {id:'beef_ball',cat:'ball',zh:'牛肉丸',py:'niúròuwán',ko:'소고기 완자',price:38,emoji:'🧆',imageUrl:'https://lh3.googleusercontent.com/d/1ENdY_TAMvuLgaZL_pqTHf61Re7krhQBs=w400',scale:0.9,sort:7},
+    {id:'fish_fillet',cat:'ball',zh:'无骨鱼片',py:'wúgǔ yúpiàn',ko:'순살 생선살',price:49,emoji:'🐟',imageUrl:'https://lh3.googleusercontent.com/d/1GHaCO80k5M6xhJvYaS1HSPxib5QkHLME=w400',scale:0.95,sort:8},
+    {id:'fish_ball',cat:'ball',zh:'鱼丸',py:'yúwán',ko:'생선 완자',price:24,emoji:'🍡',imageUrl:'https://lh3.googleusercontent.com/d/10dyV6ymBk2XvVkxFQill5UulB50F9rcB=w400',scale:0.9,sort:9},
+    {id:'frozen_tofu',cat:'tofu',zh:'冻豆腐',py:'dòng dòufu',ko:'언두부',price:16,emoji:'🧊',imageUrl:'https://lh3.googleusercontent.com/d/1CjPZZ-7j7VZ4JQkk2_aOoGvRBXLaNuVy=w400',scale:0.9,sort:10},
+    {id:'fuzhu',cat:'tofu',zh:'腐竹',py:'fǔzhú',ko:'푸주',price:17,emoji:'🎋',imageUrl:'https://lh3.googleusercontent.com/d/1yvcLi8RdzwgQO4ifNVzDfMhkE15EIpWa=w400',scale:1.0,sort:11},
+    {id:'tofu_skin',cat:'tofu',zh:'豆皮',py:'dòupí',ko:'두부피',price:17,emoji:'📄',imageUrl:'https://lh3.googleusercontent.com/d/1GdOs8Gro4rSajHiV-l7QXtceCsWkf_NM=w400',scale:0.9,sort:12},
+    {id:'cabbage',cat:'veg',zh:'娃娃菜',py:'wáwacài',ko:'알배기 배추',price:11,emoji:'🥬',imageUrl:'https://lh3.googleusercontent.com/d/1-_yNoZfc7lRSbXiQjj4_td7NjEiz6ScK=w400',scale:1.0,sort:13},
+    {id:'bok_choy',cat:'veg',zh:'上海青',py:'shànghǎiqīng',ko:'청경채',price:12,emoji:'🥬',imageUrl:'https://lh3.googleusercontent.com/d/1kCcDPYrOs_hAcxzr8P13EfZvLzPG6s31=w400',scale:1.0,sort:14},
+    {id:'crown_daisy',cat:'veg',zh:'茼蒿',py:'tónghāo',ko:'쑥갓',price:14,emoji:'🌿',imageUrl:'https://lh3.googleusercontent.com/d/151rNnhhsBbWOZS4HGA3vWoZ4kna300Zn=w400',scale:1.0,sort:15},
+    {id:'enoki',cat:'veg',zh:'金针菇',py:'jīnzhēngū',ko:'팽이버섯',price:21,emoji:'🍄',imageUrl:'https://lh3.googleusercontent.com/d/1tJ2u9FAaWtSHoRSnfVilmp3lDtB0kFhd=w400',scale:1.0,sort:16},
+    {id:'wood_ear',cat:'veg',zh:'黑木耳',py:"hēimù'ěr",ko:'목이버섯',price:16,emoji:'🍄',imageUrl:'https://lh3.googleusercontent.com/d/1wortresn0UT3V738SLLd7wxQ9bMC4ONN=w400',scale:0.9,sort:17},
+    {id:'lotus_slice',cat:'veg',zh:'莲藕片',py:"lián'ǒupiàn",ko:'연근',price:21,emoji:'🥔',imageUrl:'https://lh3.googleusercontent.com/d/1WqcWK9vuLx0-hI2V2eutNsAIDrQuQ0CW=w400',scale:0.9,sort:18},
+    {id:'sweet_potato_noodle',cat:'staple',zh:'苕粉',py:'tiáofěn',ko:'고구마 당면',price:16,emoji:'🍜',imageUrl:'https://lh3.googleusercontent.com/d/160ZJbf-Yo4qIclRUUKD7gWcrjS_4xQ_h=w400',scale:0.95,sort:19},
+    {id:'wide_noodle',cat:'staple',zh:'宽粉',py:'kuānfěn',ko:'중국 당면',price:16,emoji:'🍥',imageUrl:'https://lh3.googleusercontent.com/d/1BN5MKLDz0TfFrMGqOMTNHaJJgsVSthfD=w400',scale:0.95,sort:20},
+    {id:'instant_noodle',cat:'staple',zh:'方便面',py:'fāngbiànmiàn',ko:'라면 사리',price:12,emoji:'🍲',imageUrl:'https://lh3.googleusercontent.com/d/1vgbzIstbjnvl1mGHUDqrURFWr77NO4wc=w400',scale:0.95,sort:21},
+    {id:'sour_plum',cat:'drink',zh:'酸梅汤',py:'suānméitāng',ko:'쏸메이탕(매실차)',price:12,emoji:'🧃',imageUrl:'https://lh3.googleusercontent.com/d/1cus1gs2vJZz4MAa-YiPck5aejaZ97sII=w400',scale:0.85,sort:22},
+    {id:'wanglaoji',cat:'drink',zh:'王老吉',py:'wánglǎojí',ko:'왕라오지',price:15,emoji:'🥫',imageUrl:'https://lh3.googleusercontent.com/d/1JJEh7lsW_X1VhKN3EwJYQ9W60rLrCuWT=w400',scale:0.85,sort:23},
+    {id:'coke',cat:'drink',zh:'可乐',py:'kělè',ko:'콜라',price:15,emoji:'🥤',imageUrl:'https://lh3.googleusercontent.com/d/14LvfHn4djWpziM2DI4oAIx5zY3D7d55-=w400',scale:0.85,sort:24},
+    {id:'sprite',cat:'drink',zh:'雪碧',py:'xuěbì',ko:'스프라이트',price:15,emoji:'🫧',imageUrl:'https://lh3.googleusercontent.com/d/1xZUjBv4oIxBfbc19MPB-op_rMuLnqrAy=w400',scale:0.85,sort:25}
+  ],
+  soups: [
+    {id:'spicy_beef',zh:'麻辣锅',shortName:'麻辣',py:'málà guō',ko:'마라탕',color:'#de3928',price:88},
+    {id:'tomato',zh:'番茄锅',shortName:'番茄',py:'fānqié guō',ko:'토마토탕',color:'#ea5d33',price:68},
+    {id:'mushroom_s',zh:'菌汤锅',shortName:'菌汤',py:'jūntāng guō',ko:'버섯 맑은탕',color:'#b69363',price:59},
+    {id:'bone_broth',zh:'清汤',shortName:'清汤',py:'qīngtāng',ko:'청탕',color:'#ecdbc2',price:59},
+    {id:'sanxian',zh:'三鲜锅',shortName:'三鲜',py:'sānxiān guō',ko:'삼선탕',color:'#f0e4c7',price:59}
+  ],
+  categories: [
+    {id:'all',zh:'全部',py:'quánbù',ko:'전체',sort:1},
+    {id:'meat',zh:'肉类',py:'ròulèi',ko:'고기',sort:2},
+    {id:'offal',zh:'内脏',py:'nèizàng',ko:'특수부위',sort:3},
+    {id:'ball',zh:'丸滑',py:'wánhuá',ko:'완자·해물',sort:4},
+    {id:'tofu',zh:'豆制品',py:'dòuzhìpǐn',ko:'두부',sort:5},
+    {id:'veg',zh:'蔬菜菌',py:'shūcài jūn',ko:'채소·버섯',sort:6},
+    {id:'staple',zh:'主食',py:'zhǔshí',ko:'면·사리',sort:7},
+    {id:'drink',zh:'饮料',py:'yǐnliào',ko:'음료',sort:8}
+  ],
+  radicals: [
+    {id:'guo',radical:'钅',name:'쇠 금 변',meaning:'금속 도구·냄비',char:'锅',pinyin:'guō',koWord:'냄비 과',desc:'냄비를 뜻하며 훠궈(火锅), 반반 냄비(鸳鸯锅) 주문에 꼭 들어갑니다.',sort:1},
+    {id:'tang',radical:'氵',name:'삼수변',meaning:'액체·국물',char:'汤',pinyin:'tāng',koWord:'끓일 탕',desc:'육수(汤底)를 뜻하고, 쏸메이탕(酸梅汤)처럼 음료에도 씁니다.',sort:2},
+    {id:'rou',radical:'月',name:'육달월',meaning:'고기 육의 변형',char:'肉',pinyin:'ròu',koWord:'고기 육',desc:'고기 육(肉)이 변으로 갈 때 달 월(月) 모양이 되며 육류를 뜻합니다.',sort:3},
+    {id:'cai',radical:'艹',name:'초두머리',meaning:'식물·잎채소',char:'菜',pinyin:'cài',koWord:'나물 채',desc:'잎채소(蔬菜)와 식물성 재료 전반에 쓰입니다.',sort:4},
+    {id:'dou',radical:'豆',name:'콩 두',meaning:'콩·두부 가공품',char:'豆',pinyin:'dòu',koWord:'콩 두',desc:'두부(豆腐), 언두부(冻豆腐), 두부피(豆皮)의 표지입니다.',sort:5},
+    {id:'yu',radical:'鱼',name:'물고기 어',meaning:'어류·수산물',char:'鱼',pinyin:'yú',koWord:'물고기 어',desc:'생선살(鱼片), 생선 완자(鱼丸)에 쓰입니다.',sort:6},
+    {id:'fen',radical:'米',name:'쌀 미',meaning:'곡물·전분·당면',char:'粉',pinyin:'fěn',koWord:'가루 분',desc:'고구마 당면(苕粉), 중국 당면(宽粉)의 기본 글자입니다.',sort:7},
+    {id:'mian',radical:'面',name:'밀가루 면',meaning:'국수·면 요리',char:'面',pinyin:'miàn',koWord:'국수 면',desc:'마무리로 국물에 넣어 먹는 면 요리에 쓰입니다.',sort:8},
+    {id:'wan',radical:'丸',name:'알 환',meaning:'둥근 완자',char:'丸',pinyin:'wán',koWord:'둥글 환',desc:'소고기 완자(牛肉丸), 생선 완자(鱼丸)처럼 동글동글 빚은 완자를 뜻합니다.',sort:9}
+  ]
+};
+
+const isSide = function(it){ return SIDE_CATS.indexOf(it.cat) > -1; };
+const byId = function(arr, id){ return arr.filter(function(x){ return x.id === id; })[0]; };
+const $ = function(id){ return document.getElementById(id); };
+
+function closeIntro() {
+  const modal = $('introModal');
+  if (modal) modal.style.display = 'none';
+}
+
+/* 실시간 구글 시트 데이터 로드 */
+window.addEventListener('DOMContentLoaded', async function(){
+  try {
+    const res = await fetch(GAS_API_URL);
+    if (!res.ok) throw new Error();
+    const menuData = await res.json();
+    init(menuData);
+  } catch (err) {
+    console.warn('구글 시트 로드 대기 중 - 기본 데이터로 시작합니다.', err);
+    init(DEFAULT_MENU);
+  }
+});
+
+function init(menu){
+  MENU = menu || DEFAULT_MENU;
+  $('loading').style.display = 'none';
+
+  soups = MENU.soups.length >= 2
+    ? [MENU.soups[0].id, MENU.soups[1].id]
+    : MENU.soups.map(function(s){ return s.id; });
+
+  renderRadicals(); loadWriter();
+  renderSoups(); renderTabs(); renderGrid(); renderPot(); updateBudget();
+  initPotDropEvents();
+  go(1);
+}
+
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.style.display = 'none'; }, 2200);
+}
+
+function go(n){
+  [1,2,3].forEach(function(i){
+    $('v' + i).classList.toggle('on', i === n);
+    $('s' + i).classList.toggle('on', i === n);
+  });
+  if (n === 3) renderReceipt();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* 1단계 부수 */
+function renderRadicals(){
+  $('radList').innerHTML = MENU.radicals.map(function(r, i){
+    return '<div class="rad ' + (i === radIdx ? 'on' : '') + (doneRad[r.id] ? ' done' : '') +
+      '" onclick="pickRadical(' + i + ')">' +
+      '<span class="zh" lang="zh-CN">' + r.radical + '</span><span class="zh" lang="zh-CN">' + r.char + '</span>' +
+      (doneRad[r.id] ? '<span>✓</span>' : '') + '</div>';
+  }).join('');
+  $('prog').textContent = '완성: ' + Object.keys(doneRad).length + ' / ' + MENU.radicals.length;
+}
+
+function pickRadical(i){ radIdx = i; renderRadicals(); loadWriter(); }
+
+function loadWriter(){
+  const r = MENU.radicals[radIdx];
+  if (!r) return;
+  $('radChar').textContent = r.char;
+  $('radPy').textContent = '[' + r.pinyin + ']';
+  $('radBadge').textContent = r.radical;
+  $('radName').textContent = r.name + ' · ' + r.meaning;
+  $('radKo').textContent = r.koWord;
+  $('radDesc').textContent = r.desc;
+  $('doneMark').textContent = '';
+  $('hint').textContent = '순서대로 획을 그어보세요!';
+  $('nextRad').textContent = radIdx === MENU.radicals.length - 1 ? '훠궈 조합하러 가기 🍲' : '다음 부수 ➡️';
+
+  $('mige').innerHTML = '';
+  if (!window.HanziWriter) return;
+
+  writer = HanziWriter.create('mige', r.char, {
+    width: 190, height: 190, padding: 10,
+    showOutline: true, strokeAnimationSpeed: 1.2, delayBetweenStrokes: 150,
+    strokeColor: '#3e271c', outlineColor: '#eedbca', drawingColor: '#f25c2b', drawingWidth: 14,
+    charDataLoader: charLoader,
+    onLoadCharDataError: function(){ $('hint').textContent = '획순 데이터를 불러오지 못했습니다.'; }
+  });
+  startQuiz();
+}
+
+function charLoader(char, onComplete, onError){
+  const urls = [
+    'https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/' + encodeURIComponent(char) + '.json',
+    'https://unpkg.com/hanzi-writer-data@2.0/' + encodeURIComponent(char) + '.json'
+  ];
+  (function tryFetch(i){
+    if (i >= urls.length) { if (onError) onError(new Error('fail')); return; }
+    fetch(urls[i])
+      .then(function(res){ if (!res.ok) throw new Error(); return res.json(); })
+      .then(function(d){ onComplete(d); })
+      .catch(function(){ tryFetch(i + 1); });
+  })(0);
+}
+
+function startQuiz(){
+  if (!writer) return;
+  writer.quiz({
+    onMistake: function(){ $('hint').textContent = '획순이 달라요! 다시 그어볼까요?'; },
+    onCorrectStroke: function(){ $('hint').textContent = '좋아요! 완벽해요 👍'; },
+    onComplete: function(){
+      $('hint').textContent = '';
+      $('doneMark').textContent = '🎉 太棒了! 완성했어요!';
+      doneRad[MENU.radicals[radIdx].id] = true;
+      renderRadicals();
+    }
+  });
+}
+
+function animateChar(){ if (writer) { $('doneMark').textContent = ''; writer.cancelQuiz(); writer.animateCharacter({ onComplete: startQuiz }); } }
+function resetChar(){ if (writer) { $('doneMark').textContent = ''; writer.cancelQuiz(); writer.hideCharacter(); writer.showOutline(); startQuiz(); } }
+function nextRadical(){ if (radIdx < MENU.radicals.length - 1) pickRadical(radIdx + 1); else go(2); }
+
+/* 2단계 조합 */
+function renderSoups(){
+  $('soups').innerHTML = MENU.soups.map(function(s){
+    const idx = soups.indexOf(s.id);
+    const isSelected = idx > -1;
+    return '<div class="soup ' + (isSelected ? 'on' : '') +
+      '" onclick="toggleSoup(\'' + s.id + '\')">' +
+      '<span class="dot" style="background:' + s.color + '"></span>' +
+      '<span class="zh" lang="zh-CN" style="font-size:15px;">' + s.zh + '</span>' +
+      '<span class="py" style="font-size:13px;">[' + s.py + ']</span>' +
+      '<span>¥' + s.price + '</span></div>';
+  }).join('');
+  paintBroth();
+}
+
+function toggleSoup(id){
+  const i = soups.indexOf(id);
+  if (i > -1) {
+    if (soups.length > 1) soups.splice(i, 1);
+  } else {
+    if (soups.length >= 2) soups.shift();
+    soups.push(id);
+    if (cost().total > MAX) { soups.pop(); return toast('예산 350元을 넘습니다!'); }
+  }
+  renderSoups(); updateBudget();
+}
+
+function paintBroth(){
+  if (!MENU.soups.length) return;
+  const l = byId(MENU.soups, soups[0]) || MENU.soups[0];
+  const r = byId(MENU.soups, soups[1]) || l;
+  $('halfL').style.background = l.color;
+  $('halfR').style.background = r.color;
+  $('miniHalfL').style.background = l.color;
+  $('miniHalfR').style.background = r.color;
+}
+
+function renderTabs(){
+  $('tabs').innerHTML = MENU.categories.map(function(c){
+    return '<div class="tab ' + (c.id === cat ? 'on' : '') +
+      '" onclick="setCat(\'' + c.id + '\')">' + c.ko + '·<span class="zh" lang="zh-CN">' + c.zh + '</span></div>';
+  }).join('');
+}
+
+function setCat(id){ cat = id; renderTabs(); renderGrid(); }
+
+function art(it){
+  const url = String(it.imageUrl || '').trim();
+  if (!url) return '<span class="fb">' + it.emoji + '</span>';
+  return '<img src="' + url + '" alt="' + it.ko + '" loading="lazy" referrerpolicy="no-referrer" ' +
+    'onerror="this.parentNode.innerHTML=\'<span class=&quot;fb&quot;>' + it.emoji + '</span>\'">';
+}
+
+function renderGrid(){
+  const list = cat === 'all' ? MENU.ingredients
+    : MENU.ingredients.filter(function(i){ return i.cat === cat; });
+  if (!list.length) {
+    $('grid').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center">재료가 없습니다.</div>';
+    return;
+  }
+  $('grid').innerHTML = list.map(function(it){
+    const side = isSide(it);
+    const inPot = pot.some(function(p){ return p.id === it.id; });
+    return '<div class="card ' + (inPot ? 'in ' : '') +
+      (side ? 'nodrag' : '') + '" draggable="' + (!side) + '" data-id="' + it.id + '" data-side="' + (side ? 1 : 0) + '">' +
+      '<span class="price">¥' + it.price + '</span><span class="chk">✓</span>' +
+      '<div class="thumb">' + art(it) + '</div>' +
+      '<div class="zh" lang="zh-CN" style="font-size:16px;">' + it.zh + '</div>' +
+      '<div class="py" style="font-size:13.5px;">[' + it.py + ']</div>' +
+      '<div class="ko">' + it.ko + '</div></div>';
+  }).join('');
+  bindCards();
+}
+
+function cost(){
+  const s = soups.reduce(function(a, id){
+    const x = byId(MENU.soups, id); return a + (x ? Number(x.price) : 0);
+  }, 0);
+  const i = pot.reduce(function(a, p){
+    const x = byId(MENU.ingredients, p.id); return a + (x ? Number(x.price) : 0);
+  }, 0);
+  return { soup: s, item: i, total: s + i };
+}
+
+function toggleItem(id, targetSide){
+  const it = byId(MENU.ingredients, id);
+  if (!it) return;
+  const idx = pot.findIndex(function(p){ return p.id === id; });
+  if (idx > -1) {
+    pot.splice(idx, 1);
+  } else {
+    if (cost().total + Number(it.price) > MAX) return toast('예산 350元을 초과해요!');
+    pot.push({ id: id, side: targetSide || 'L' });
+  }
+  renderGrid(); renderPot(); updateBudget();
+}
+
+function clearPot(){ pot = []; renderGrid(); renderPot(); updateBudget(); }
+
+function updateBudget(){
+  const t = cost().total;
+  $('total').textContent = '¥' + t;
+  $('left').textContent = '남은 금액 ¥' + (MAX - t);
+  $('bar').style.width = Math.min(100, t / MAX * 100) + '%';
+}
+
+function renderPot(){
+  const potEl = $('pot');
+  const olds = potEl.querySelectorAll('.chunk');
+  for (let i = 0; i < olds.length; i++) olds[i].remove();
+
+  const miniPot = $('miniPot');
+  const miniOlds = miniPot.querySelectorAll('.mini-chunk');
+  for (let i = 0; i < miniOlds.length; i++) miniOlds[i].remove();
+
+  const food = pot.map(function(p){
+    const obj = byId(MENU.ingredients, p.id);
+    return obj && !isSide(obj) ? { item: obj, side: p.side } : null;
+  }).filter(Boolean);
+
+  $('potEmpty').style.display = food.length ? 'none' : 'flex';
+
+  const base = food.length <= 4 ? 118 : food.length <= 8 ? 104 : 92;
+
+  let li = 0, ri = 0;
+  food.forEach(function(f){
+    const isL = f.side === 'L';
+    const idx = isL ? li++ : ri++;
+    const ang = idx * 2.3 + (isL ? 0.3 : 1.5);
+    const spread = 0.22 + Math.min(idx, 4) * 0.12;
+
+    const cx = isL ? 30 : 70;
+    const x = cx + Math.cos(ang) * spread * 14;
+    const y = 50 + Math.sin(ang) * spread * 28;
+
+    const el = document.createElement('div');
+    el.className = 'chunk';
+    el.style.left = Math.max(isL ? 12 : 56, Math.min(isL ? 44 : 88, x)) + '%';
+    el.style.top = Math.max(16, Math.min(84, y)) + '%';
+    const sz = Math.round(base * (Number(f.item.scale) || 1));
+    el.style.width = sz + 'px';
+    el.style.height = sz + 'px';
+    el.title = f.item.ko + ' (클릭 시 뺍니다)';
+    el.innerHTML = art(f.item);
+    el.onclick = function(){ toggleItem(f.item.id); };
+    potEl.appendChild(el);
+
+    const miniEl = document.createElement('div');
+    miniEl.className = 'mini-chunk';
+    miniEl.style.left = Math.max(isL ? 15 : 58, Math.min(isL ? 42 : 85, x)) + '%';
+    miniEl.style.top = Math.max(18, Math.min(82, y)) + '%';
+    miniEl.innerHTML = art(f.item);
+    miniPot.appendChild(miniEl);
+  });
+  renderSide();
+}
+
+function renderSide(){
+  const s = pot.map(function(p){ return byId(MENU.ingredients, p.id); })
+                .filter(function(i){ return i && isSide(i); });
+  $('side').innerHTML = '<span>음료: </span>' + (s.length
+    ? s.map(function(x){
+        return '<span class="chip" onclick="toggleItem(\'' + x.id + '\')">' +
+          (String(x.imageUrl || '').trim() ? '<img src="' + x.imageUrl + '" referrerpolicy="no-referrer">' : x.emoji) +
+          '<span class="zh" lang="zh-CN">' + x.zh + '</span> ✕</span>';
+      }).join('')
+    : '<span style="color:#a1887f;">음료는 클릭하면 아래에 놓입니다.</span>');
+}
+
+/* 드래그 앤 드롭 */
+let draggedId = null;
+function bindCards(){
+  const cards = document.querySelectorAll('.card');
+  for (let i = 0; i < cards.length; i++){
+    const c = cards[i];
+    if (c.dataset.side === '1') {
+      c.onclick = function(){ toggleItem(this.dataset.id); };
+    } else {
+      c.onclick = function(){
+        const leftCount = pot.filter(function(p){ return p.side === 'L'; }).length;
+        const rightCount = pot.filter(function(p){ return p.side === 'R'; }).length;
+        toggleItem(this.dataset.id, leftCount <= rightCount ? 'L' : 'R');
+      };
+      c.ondragstart = function(e){
+        draggedId = this.dataset.id;
+        e.dataTransfer.setData('text/plain', draggedId);
+      };
+    }
+  }
+}
+
+function initPotDropEvents(){
+  const halfL = $('halfL');
+  const halfR = $('halfR');
+
+  [halfL, halfR].forEach(function(half){
+    half.ondragover = function(e){ e.preventDefault(); this.classList.add('over'); };
+    half.ondragleave = function(){ this.classList.remove('over'); };
+    half.ondrop = function(e){
+      e.preventDefault();
+      this.classList.remove('over');
+      const id = e.dataTransfer.getData('text/plain') || draggedId;
+      if (!id) return;
+      const side = this.id === 'halfL' ? 'L' : 'R';
+      const existing = pot.find(function(p){ return p.id === id; });
+      if (existing) {
+        existing.side = side;
+        renderPot();
+      } else {
+        toggleItem(id, side);
+      }
+    };
+  });
+}
+
+/* 3단계 주문서 확인 */
+function renderReceipt(){
+  if (!MENU) return;
+  paintBroth();
+  const s = soups.map(function(id){ return byId(MENU.soups, id); }).filter(Boolean);
+  $('rcTitle').textContent =
+    '원앙 훠궈 (' + s.map(function(x){ return x.zh; }).join(' + ') + ') · 합계 ¥' + cost().total;
+
+  $('rcItems').innerHTML = pot.length
+    ? pot.map(function(p){
+        const it = byId(MENU.ingredients, p.id);
+        if (!it) return '';
+        return '<span class="chip" onclick="playWord(\'' + it.zh + '\')" title="클릭하여 발음 듣기">' +
+          (String(it.imageUrl || '').trim() ? '<img src="' + it.imageUrl + '" referrerpolicy="no-referrer">' : it.emoji) +
+          '<span class="zh" lang="zh-CN">' + it.zh + '</span> <span class="py" style="color:var(--main-orange);">[' + it.py + ']</span> ' + it.ko + ' 🔊</span>';
+      }).join('')
+    : '<span style="color:#a1887f;">냄비에 담긴 재료가 없습니다.</span>';
+}
+
+function playWord(t){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = 'zh-CN'; u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+
+/* AI 주문 생성 호출 (Vercel Serverless API /api/chat 호출) */
+async function askAI(){
+  if (!pot.length) return toast('재료를 먼저 담아주세요!');
+
+  const btn = $('askBtn');
+  btn.disabled = true; btn.textContent = '주문서 만드는 중… 🧑‍🍳';
+
+  const allFood = pot.map(function(p){ const it = byId(MENU.ingredients, p.id); return it ? it.zh : null; }).filter(Boolean);
+  const sideDrink = pot.map(function(p){ const it = byId(MENU.ingredients, p.id); return it && isSide(it) ? it.zh : null; }).filter(Boolean);
+
+  const order = {
+    soupNames: soups.map(function(id){ const x = byId(MENU.soups, id); return x ? x.zh : ''; }),
+    itemNames: allFood,
+    sideNames: sideDrink,
+    total: cost().total
+  };
+
+  const exactDictionary = 
+    '【절대 매칭 사전: 한자 -> 한어병음 -> 한국어】\n' +
+    '麻辣锅 -> málà guō -> 마라탕\n' +
+    '番茄锅 -> fānqié guō -> 토마토탕\n' +
+    '菌汤锅 -> jūntāng guō -> 버섯 맑은탕\n' +
+    '清汤 -> qīngtāng -> 청탕\n' +
+    '三鲜锅 -> sānxiān guō -> 삼선탕\n' +
+    '牛肉 -> niúròu -> 소고기\n' +
+    '羊肉 -> yángròu -> 양고기\n' +
+    '毛肚 -> máodǔ -> 소 천엽\n' +
+    '鸭肠 -> yācháng -> 오리 창자\n' +
+    '鸭血 -> yāxuè -> 오리 선지\n' +
+    '虾滑 -> xiāhuá -> 새우 완자\n' +
+    '牛肉丸 -> niúròuwán -> 소고기 완자\n' +
+    '无骨鱼片 -> wúgǔ yúpiàn -> 순살 생선살\n' +
+    '鱼丸 -> yúwán -> 생선 완자\n' +
+    '冻豆腐 -> dòng dòufu -> 언두부\n' +
+    '腐竹 -> fǔzhú -> 푸주\n' +
+    '豆皮 -> dòupí -> 두부피\n' +
+    '娃娃菜 -> wáwacài -> 알배기 배추\n' +
+    '上海青 -> shànghǎiqīng -> 청경채\n' +
+    '茼蒿 -> tónghāo -> 쑥갓\n' +
+    '金针菇 -> jīnzhēngū -> 팽이버섯\n' +
+    '黑木耳 -> hēimù\'ěr -> 목이버섯\n' +
+    '莲藕片 -> lián\'ǒupiàn -> 연근\n' +
+    '苕粉 -> tiáofěn -> 고구마 당면\n' +
+    '宽粉 -> kuānfěn -> 중국 당면\n' +
+    '方便面 -> fāngbiànmiàn -> 라면 사리\n' +
+    '酸梅汤 -> suānméitāng -> 쏸메이탕\n' +
+    '王老吉 -> wánglǎojí -> 왕라오지\n' +
+    '可乐 -> kělè -> 콜라\n' +
+    '雪碧 -> xuěbì -> 스프라이트\n';
+
+  const prompt =
+    exactDictionary +
+    '\n너는 귀여운 중국 훠궈 주방의 마스코트 요리사 선생님이다.\n' +
+    '선택한 탕: ' + order.soupNames.join(' + ') + '\n' +
+    '선택한 재료/음료: ' + order.itemNames.join(', ') + '\n' +
+    '총액: ' + order.total + '元\n\n' +
+    '★ 핵심 규칙 ★\n' +
+    '1. 한어병음 표기 시 위의 【절대 매칭 사전】에 기재된 병음과 성조를 글자 그대로 100% 복사하여 사용하라.\n' +
+    '2. 모든 한자는 전통 번체자가 아닌 본토 간화자(简体字)로만 작성하라.\n' +
+    '3. [주문문장]과 [병음]과 [해석]은 2줄로 나누어 작성하라:\n' +
+    '   - 1번째 줄: 탕 주문 (예: 我要麻辣锅和番茄锅。 / Wǒ yào málà guō hé fānqié guō. / 저는 마라탕과 토마토탕을 원합니다.)\n' +
+    '   - 2번째 줄: 재료 추가 (예: 还要羊肉、虾滑、可乐。 / Hái yào yángròu、xiāhuá、kělè. / 추가로 양고기, 새우 완자, 콜라를 주세요.)\n' +
+    '4. [평가]는 자연스러운 한국어로만 다정하게 2문장 작성하라.\n' +
+    '5. [추천 소스]는 디핑소스 조합을 간화자 + [병음] + (한국어) 형태로 "、" 부호로 나열하라.\n' +
+    '6. [익히는 순서]는 재료를 간화자 + [병음] + (한국어) 형태로 화살표(→)로 나열하라.\n\n' +
+    '아래 6개 항목 형식으로만 순수 텍스트로 답하라.\n' +
+    '[평가] 다정한 말투로 이 조합의 장점을 한국어로만 2문장 작성.\n' +
+    '[주문문장]\n줄1: 탕 주문 문장(끝에 。 필수)\n줄2: 재료 추가 문장(끝에 。 필수)\n' +
+    '[병음]\n줄1: 탕 주문 한어병음(끝에 . 필수)\n줄2: 재료 추가 한어병음(끝에 . 필수)\n' +
+    '[해석]\n줄1: 탕 주문 한국어 해석\n줄2: 재료 추가 한국어 해석\n' +
+    '[추천 소스] 소스 재료 간화자 + [한어병음] + (한국어 뜻) 형태로 "、" 부호를 사용해 배합 한 줄.\n' +
+    '[익히는 순서] 재료 간화자 + [한어병음] + (한국어 뜻) 형태로 화살표(→)를 사용해 순서 한 줄.';
+
+  try {
+    let content = '';
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      content = json.content || json.text || '';
+    } else {
+      throw new Error('API 응답 오류 (' + res.status + ')');
+    }
+
+    const parsed = {};
+    ['평가','주문문장','병음','해석','추천 소스','익히는 순서'].forEach(function(k) {
+      const m = content.match(new RegExp('\\[' + k + '\\]\\s*([\\s\\S]*?)(?=\\n\\[|$)'));
+      parsed[k] = m ? m[1].trim() : '';
+    });
+
+    showResult({ ok: true, parsed: parsed }, order);
+  } catch (err) {
+    toast('주문서 생성 오류: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '주문 전송하기 🚀';
+  }
+}
+
+/* 3단계 결과 렌더링: 문장 분리 카드 & 시트 자동 저장 */
+function showResult(r, order){
+  const box = $('result');
+  box.style.display = 'block';
+  const p = r.parsed;
+
+  const parseLines = function(text){
+    const lines = text.split('\n').map(function(l){ return l.replace(/^줄[12]:\s*/, '').trim(); }).filter(Boolean);
+    return [lines[0] || '', lines[1] || ''];
+  };
+
+  const sZh = parseLines(p['주문문장']);
+  const sPy = parseLines(p['병음']);
+  const sKo = parseLines(p['해석']);
+
+  box.innerHTML =
+    '<div style="font-size:16px; color:var(--line-brown); margin-bottom:4px;">🎉 셰프의 맞춤 주문서 (총 ¥' + order.total + ')</div>' +
+    
+    /* 1문장: 탕 베이스 주문 카드 */
+    '<div class="sentence-card">' +
+      '<span class="tag-badge">🍲 1단계: 탕 주문하기</span>' +
+      '<div class="zh" lang="zh-CN" id="zh_1">' + sZh[0] + '</div>' +
+      '<div class="py" id="py_1">' + sPy[0] + '</div>' +
+      '<div class="ko">' + sKo[0] + '</div>' +
+      '<div class="row-actions">' +
+        '<button class="btn" onclick="playWord(\'' + sZh[0].replace(/'/g, "\\'") + '\')">🔊 1문장 듣기</button>' +
+        '<button class="btn primary" onclick="toggleVoicePractice(1, \'' + sZh[0].replace(/'/g, "\\'") + '\', this)">🎙️ 따라 말해보기</button>' +
+      '</div>' +
+      '<div class="mic-out" id="micOut_1"></div>' +
+    '</div>' +
+
+    /* 2문장: 재료 추가 주문 카드 */
+    '<div class="sentence-card">' +
+      '<span class="tag-badge">🥢 2단계: 재료 추가하기</span>' +
+      '<div class="zh" lang="zh-CN" id="zh_2">' + sZh[1] + '</div>' +
+      '<div class="py" id="py_2">' + sPy[1] + '</div>' +
+      '<div class="ko">' + sKo[1] + '</div>' +
+      '<div class="row-actions">' +
+        '<button class="btn" onclick="playWord(\'' + sZh[1].replace(/'/g, "\\'") + '\')">🔊 2문장 듣기</button>' +
+        '<button class="btn primary" onclick="toggleVoicePractice(2, \'' + sZh[1].replace(/'/g, "\\'") + '\', this)">🎙️ 따라 말해보기</button>' +
+      '</div>' +
+      '<div class="mic-out" id="micOut_2"></div>' +
+    '</div>' +
+
+    /* 맛 평가 및 소스 안내 */
+    '<div class="section-item" style="margin-top:12px;"><b>💬 맛 평가:</b> ' + p['평가'] + '</div>' +
+    '<div class="section-item"><b>🍯 추천 소스:</b> <span class="zh" lang="zh-CN">' + (p['추천 소스'] || '') + '</span></div>' +
+    '<div class="section-item"><b>⏱️ 익히는 순서:</b> <span class="zh" lang="zh-CN">' + (p['익히는 순서'] || '') + '</span></div>';
+
+  /* 구글 시트 Orders 시트에 주문 데이터 자동 전송 */
+  order.sentence = (sZh[0] + ' ' + sZh[1]).trim();
+  order.feedback = p['평가'];
+  fetch(GAS_API_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  });
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* 문장별 독립 음성 인식 및 AI 발음 피드백 */
+function toggleVoicePractice(seq, targetText, btnEl){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const outEl = $('micOut_' + seq);
+
+  if (!SR) {
+    outEl.style.display = 'block';
+    outEl.innerHTML = '⚠️ 크롬(Chrome) 또는 엣지(Edge) 브라우저에서 마이크 기능을 지원합니다.';
+    return;
+  }
+
+  if (activeRecog) {
+    activeRecog.stop();
+    activeRecog = null;
+    if (activeBtn) activeBtn.textContent = '🎙️ 따라 말해보기';
+    if (activeBtn === btnEl) return;
+  }
+
+  const recog = new SR();
+  recog.lang = 'zh-CN';
+  recog.continuous = false;
+  recog.interimResults = false;
+
+  activeRecog = recog;
+  activeBtn = btnEl;
+
+  recog.onstart = function(){
+    btnEl.textContent = '듣고 있어요… (터치 시 중지)';
+    outEl.style.display = 'block';
+    outEl.innerHTML = '🎧 마이크에 대고 중국어로 말씀해 보세요…';
+  };
+
+  recog.onresult = async function(e){
+    const spoken = e.results[0][0].transcript.trim();
+    outEl.innerHTML = '내가 말한 문장: <b>' + spoken + '</b><br>셰프 선생님이 발음을 첨삭하고 있어요… ✍️';
+    const feedback = await requestFeedback(spoken, targetText);
+    outEl.innerHTML = '내가 말한 문장: <b>' + spoken + '</b><br><br>' + feedback;
+  };
+
+  recog.onerror = function(e){
+    outEl.innerHTML = '인식 안내: ' + (e.error === 'not-allowed' ? '브라우저 주소창 좌측 자물쇠 아이콘에서 마이크 권한을 허용해 주세요.' : e.error);
+  };
+
+  recog.onend = function(){
+    btnEl.textContent = '🎙️ 따라 말해보기';
+    activeRecog = null;
+  };
+
+  try {
+    recog.start();
+  } catch (err) {
+    outEl.innerHTML = '마이크 시작 오류: ' + err.message;
+  }
+}
+
+/* 발음 첨삭 API 호출 */
+async function requestFeedback(spoken, target){
+  const prompt =
+    '너는 귀여운 중국어 훠궈 주방 셰프 교정 선생님이다.\n' +
+    '목표 중국어 문장: ' + target + '\n' +
+    '학습자가 말한 문장: ' + spoken + '\n' +
+    '학습자를 격려하며 발음과 성조에서 어떤 점이 훌륭했고 어떤 부분을 신경 쓰면 더 자연스러울지 다정하게 한국어로 3문장 이내로 피드백하라.';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    });
+    if (!res.ok) throw new Error();
+    const json = await res.json();
+    return json.content || json.text || '참 잘했어요! 성조를 조금만 더 또렷하게 발음하면 원어민 같아요 👍';
+  } catch (e) {
+    return '👍 훌륭한 시도예요! 목표 문장의 성조를 살려 한 번 더 따라 읽어보세요!';
+  }
+}
+</script>
+</body>
+</html>
