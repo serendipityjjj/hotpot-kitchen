@@ -28,8 +28,9 @@
   font-language-override: "ZHS";
 }
 
+/* 한어병음 전용 Arial 폰트 강제 적용 (성조 기호 깨짐 방지) */
 .py {
-  font-family: Arial, Helvetica, sans-serif !important;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
   letter-spacing: 0.3px;
   font-weight: 600;
 }
@@ -386,8 +387,9 @@ button.btn:disabled { opacity: 0.5; cursor: default; }
   color: var(--text-dark) !important; margin: 0 !important; display: inline !important;
 }
 
+/* 추천 소스와 익히는 순서 내부 병음도 확실하게 Arial 폰트로 고정 */
 .section-item .py {
-  font-family: Arial, Helvetica, sans-serif !important;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
 }
 
 .mic-out {
@@ -922,6 +924,7 @@ const PINYIN_CORRECTIONS = {
   'báizǔ': 'báicù'
 };
 
+/* 강화된 폰트 포맷터: 병음 부분에 Arial 폰트를 인라인 스타일과 클래스로 완벽하게 강제 적용 */
 function formatPinyinLine(text) {
   if (!text) return '';
   Object.keys(PINYIN_CORRECTIONS).forEach(function(wrong) {
@@ -929,7 +932,7 @@ function formatPinyinLine(text) {
     text = text.replace(regex, PINYIN_CORRECTIONS[wrong]);
   });
   let res = text.replace(/\[([^\]]+)\]/g, function(match, p1) {
-    return '<span class="py">[' + p1 + ']</span>';
+    return '<span class="py" style="font-family:Arial,\'Helvetica Neue\',Helvetica,sans-serif !important; font-weight:600;">[' + p1 + ']</span>';
   });
   res = res.replace(/([\u4e00-\u9fa5]+)/g, function(match, p1) {
     return '<span class="zh" lang="zh-CN">' + p1 + '</span>';
@@ -937,7 +940,7 @@ function formatPinyinLine(text) {
   return res;
 }
 
-/* 3단계 주문서 확인: 미니 냄비 대신 고른 재료 이미지 칩 목록 표시 */
+/* 3단계 주문서 확인: 선택한 재료 이미지 칩 목록 표시 */
 function renderReceipt(){
   if (!MENU) return;
   paintBroth();
@@ -951,7 +954,7 @@ function renderReceipt(){
         if (!it) return '';
         return '<span class="chip" onclick="playWord(\'' + it.zh + '\')" title="클릭하여 발음 듣기">' +
           (String(it.imageUrl || '').trim() ? '<img src="' + it.imageUrl + '" referrerpolicy="no-referrer">' : it.emoji) +
-          '<span class="zh" lang="zh-CN">' + it.zh + '</span> <span class="py" style="color:var(--main-orange);">[' + it.py + ']</span> ' + it.ko + ' 🔊</span>';
+          '<span class="zh" lang="zh-CN">' + it.zh + '</span> <span class="py" style="color:var(--main-orange); font-family:Arial,sans-serif !important;">[' + it.py + ']</span> ' + it.ko + ' 🔊</span>';
       }).join('')
     : '<span style="color:#a1887f;">담긴 재료가 없습니다.</span>';
 }
@@ -1094,7 +1097,7 @@ function showResult(r, order){
     '<div class="sentence-card">' +
       '<span class="tag-badge">🍲 문장 1: 탕 주문하기</span>' +
       '<div class="zh" lang="zh-CN" id="zh_1">' + sZh[0] + '</div>' +
-      '<div class="py" id="py_1">' + sPy[0] + '</div>' +
+      '<div class="py" id="py_1" style="font-family:Arial,sans-serif !important;">' + sPy[0] + '</div>' +
       '<div class="ko">' + sKo[0] + '</div>' +
       '<div class="row-actions">' +
         '<button class="btn" onclick="playWord(\'' + sZh[0].replace(/'/g, "\\'") + '\')">🔊 문장 1 듣기</button>' +
@@ -1108,7 +1111,7 @@ function showResult(r, order){
     '<div class="sentence-card">' +
       '<span class="tag-badge">🥢 문장 2: 재료 추가하기</span>' +
       '<div class="zh" lang="zh-CN" id="zh_2">' + sZh[1] + '</div>' +
-      '<div class="py" id="py_2">' + sPy[1] + '</div>' +
+      '<div class="py" id="py_2" style="font-family:Arial,sans-serif !important;">' + sPy[1] + '</div>' +
       '<div class="ko">' + sKo[1] + '</div>' +
       '<div class="row-actions">' +
         '<button class="btn" onclick="playWord(\'' + sZh[1].replace(/'/g, "\\'") + '\')">🔊 문장 2 듣기</button>' +
