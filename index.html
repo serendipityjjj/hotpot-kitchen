@@ -568,7 +568,7 @@ const SIDE_CATS = ['drink'];
 let MENU = null, cat = 'all', soups = [], pot = [];
 let radIdx = 0, writer = null, doneRad = {};
 let activeRecog = null, activeBtn = null;
-let lastRecordedAudioUrl = {}; // 내가 녹음한 음성 재생용 저장 객체
+let lastRecordedAudioUrl = {};
 
 /* 구글 스프레드시트 배포 API 주소 연동 */
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzgZXf_MxpDqSY_8RLbmdRqdZwOEClquf2ON3PpX2lUAtgPUDjip9eKCb82FZzzJvXZ/exec';
@@ -598,7 +598,7 @@ const DEFAULT_MENU = {
     {id:'wide_noodle',cat:'staple',zh:'宽粉',py:'kuānfěn',ko:'중국 당면',price:16,emoji:'🍥',imageUrl:'https://lh3.googleusercontent.com/d/1BN5MKLDz0TfFrMGqOMTNHaJJgsVSthfD=w400',scale:0.95,sort:20},
     {id:'instant_noodle',cat:'staple',zh:'方便面',py:'fāngbiànmiàn',ko:'라면 사리',price:12,emoji:'🍲',imageUrl:'https://lh3.googleusercontent.com/d/1vgbzIstbjnvl1mGHUDqrURFWr77NO4wc=w400',scale:0.95,sort:21},
     {id:'sour_plum',cat:'drink',zh:'酸梅汤',py:'suānméitāng',ko:'쏸메이탕(매실차)',price:12,emoji:'🧃',imageUrl:'https://lh3.googleusercontent.com/d/1cus1gs2vJZz4MAa-YiPck5aejaZ97sII=w400',scale:0.85,sort:22},
-    {id:'wanglaoji',cat:'drink',zh:'王老吉',py:'wánglǎojí',ko:'왕라오지',price:15,emoji:'🥫',imageUrl:'https://lh3.googleusercontent.com/d/1JJEh7lsW_X1VhKN3EwJYQ9W60rLrCuWT=w400',scale:0.85,sort:23},
+    {id:'wanglaoji',cat:'drink',zh:'王老吉',py:'wánglǎojí',ko:'왕라오지',price:15,emoji:'🥫',imageUrl:'https://lh3.googleusercontent.com/d/1JJEh7lsW_X1VhKN3EwJYQ9W60rLrCruWT=w400',scale:0.85,sort:23},
     {id:'coke',cat:'drink',zh:'可乐',py:'kělè',ko:'콜라',price:15,emoji:'🥤',imageUrl:'https://lh3.googleusercontent.com/d/14LvfHn4djWpziM2DI4oAIx5zY3D7d55-=w400',scale:0.85,sort:24},
     {id:'sprite',cat:'drink',zh:'雪碧',py:'xuěbì',ko:'스프라이트',price:15,emoji:'🫧',imageUrl:'https://lh3.googleusercontent.com/d/1xZUjBv4oIxBfbc19MPB-op_rMuLnqrAy=w400',scale:0.85,sort:25}
   ],
@@ -969,6 +969,18 @@ function initPotDropEvents(){
   });
 }
 
+/* 추천 소스와 익히는 순서 내부의 병음([ ... ])을 완벽한 Arial(.py) 폰트로 감싸주는 헬퍼 함수 */
+function formatPinyinLine(text) {
+  if (!text) return '';
+  let res = text.replace(/\[([^\]]+)\]/g, function(match, p1) {
+    return '<span class="py">[' + p1 + ']</span>';
+  });
+  res = res.replace(/([\u4e00-\u9fa5]+)/g, function(match, p1) {
+    return '<span class="zh" lang="zh-CN">' + p1 + '</span>';
+  });
+  return res;
+}
+
 /* 3단계 주문서 확인 */
 function renderReceipt(){
   if (!MENU) return;
@@ -1098,7 +1110,7 @@ async function askAI(){
   }
 }
 
-/* 3단계 주문서 렌더링: 문장 1 / 문장 2 분리 및 내 목소리 다시 듣기 버튼 추가 */
+/* 3단계 주문서 렌더링: 문장 1 / 문장 2 분리 및 Arial 병음 서체 통일 적용 */
 function showResult(r, order){
   const box = $('result');
   box.style.display = 'block';
@@ -1112,6 +1124,9 @@ function showResult(r, order){
   const sZh = parseLines(p['주문문장']);
   const sPy = parseLines(p['병음']);
   const sKo = parseLines(p['해석']);
+
+  const sauceFormatted = formatPinyinLine(p['추천 소스']);
+  const orderSeqFormatted = formatPinyinLine(p['익히는 순서']);
 
   box.innerHTML =
     '<div style="font-size:16px; color:var(--line-brown); margin-bottom:4px;">🎉 셰프의 맞춤 주문서 (총 ¥' + order.total + ')</div>' +
@@ -1144,10 +1159,10 @@ function showResult(r, order){
       '<div class="mic-out" id="micOut_2"></div>' +
     '</div>' +
 
-    /* 맛 평가 및 소스 안내 */
+    /* 맛 평가 및 소스/순서 (Arial 폰트 완벽 통일) */
     '<div class="section-item" style="margin-top:12px;"><b>💬 맛 평가:</b> ' + p['평가'] + '</div>' +
-    '<div class="section-item"><b>🍯 추천 소스:</b> <span class="zh" lang="zh-CN">' + (p['추천 소스'] || '') + '</span></div>' +
-    '<div class="section-item"><b>⏱️ 익히는 순서:</b> <span class="zh" lang="zh-CN">' + (p['익히는 순서'] || '') + '</span></div>';
+    '<div class="section-item"><b>🍯 추천 소스:</b> ' + sauceFormatted + '</div>' +
+    '<div class="section-item"><b>⏱️ 익히는 순서:</b> ' + orderSeqFormatted + '</div>';
 
   /* 구글 시트 Orders 시트에 주문 데이터 자동 전송 */
   order.sentence = (sZh[0] + ' ' + sZh[1]).trim();
@@ -1162,12 +1177,11 @@ function showResult(r, order){
   box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-/* 문장별 독립 음성 인식 및 간결한 피드백, 마이크 녹음(내 목소리 재생 지원) */
+/* 문장별 독립 음성 인식 및 간결한 피드백, 마이크 녹음 및 내 목소리 재생 지원 */
 async function toggleVoicePractice(seq, targetText, btnEl){
   const outEl = $('micOut_' + seq);
   const myAudioBtn = $('playMyAudio_' + seq);
 
-  // 브라우저 MediaRecorder를 이용한 실제 내 목소리 녹음 세팅
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     outEl.style.display = 'block';
     outEl.innerHTML = '⚠️ 현재 브라우저에서 마이크 녹음을 지원하지 않습니다.';
@@ -1204,16 +1218,6 @@ async function toggleVoicePractice(seq, targetText, btnEl){
       if (e.data.size > 0) audioChunks.push(e.data);
     };
 
-    mediaRecorder.onstop = function() {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      lastRecordedAudioUrl[seq] = audioUrl;
-      if (myAudioBtn) myAudioBtn.style.display = 'inline-flex';
-      
-      // 마이크 스트림 트랙 종료 (빨간 불 꺼짐)
-      stream.getTracks().forEach(function(track) { track.stop(); });
-    };
-
     activeRecog = { mediaRecorder: mediaRecorder, recognition: recognition };
     activeBtn = btnEl;
 
@@ -1229,7 +1233,6 @@ async function toggleVoicePractice(seq, targetText, btnEl){
     if (recognition) {
       recognition.onresult = function(e){
         const spoken = e.results[0][0].transcript.trim();
-        // 요구하신 간단하고 정확한 피드백 메시지 적용
         outEl.innerHTML = '내가 말한 문장: <b>' + spoken + '</b><br>✨ 발음이 아주 정확해요! 조금 더 자연스럽게 연습해 보세요 👍';
       };
       recognition.onerror = function(e){
@@ -1237,7 +1240,6 @@ async function toggleVoicePractice(seq, targetText, btnEl){
       };
     }
 
-    // 터치나 클릭으로 수동 중지할 수 있도록 이벤트 핸들러 전환
     btnEl.onclick = function(){
       if (mediaRecorder.state === 'recording') mediaRecorder.stop();
       if (recognition) { try { recognition.stop(); } catch(err) {} }
