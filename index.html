@@ -417,6 +417,11 @@ button.btn:disabled { opacity: 0.5; cursor: default; }
   color: var(--text-dark) !important; margin: 0 !important; display: inline !important;
 }
 
+/* 추천 소스와 익히는 순서 내부 병음도 확실하게 Arial 폰트로 고정 */
+.section-item .py {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
 .mic-out {
   margin-top: 6px; font-size: 13.5px; line-height: 1.5; color: var(--line-brown);
   background: #fdf6ec; border-radius: 10px; padding: 6px 10px; display: none;
@@ -592,7 +597,7 @@ const DEFAULT_MENU = {
     {id:'wide_noodle',cat:'staple',zh:'宽粉',py:'kuānfěn',ko:'중국 당면',price:16,emoji:'🍥',imageUrl:'https://lh3.googleusercontent.com/d/1BN5MKLDz0TfFrMGqOMTNHaJJgsVSthfD=w400',scale:0.95,sort:20},
     {id:'instant_noodle',cat:'staple',zh:'方便面',py:'fāngbiànmiàn',ko:'라면 사리',price:12,emoji:'🍲',imageUrl:'https://lh3.googleusercontent.com/d/1vgbzIstbjnvl1mGHUDqrURFWr77NO4wc=w400',scale:0.95,sort:21},
     {id:'sour_plum',cat:'drink',zh:'酸梅汤',py:'suānméitāng',ko:'쏸메이탕(매실차)',price:12,emoji:'🧃',imageUrl:'https://lh3.googleusercontent.com/d/1cus1gs2vJZz4MAa-YiPck5aejaZ97sII=w400',scale:0.85,sort:22},
-    {id:'wanglaoji',cat:'drink',zh:'王老吉',py:'wánglǎojí',ko:'왕라오지',price:15,emoji:'🥫',imageUrl:'https://lh3.googleusercontent.com/d/1JJEh7lsW_X1VhKN3EwJYQ9W60rLrCuWT=w400',scale:0.85,sort:23},
+    {id:'wanglaoji',cat:'drink',zh:'王老吉',py:'wánglǎojí',ko:'왕라오지',price:15,emoji:'🥫',imageUrl:'https://lh3.googleusercontent.com/d/1JJEh7lsW_X1VhKN3EwJYQ9W60rLrCruWT=w400',scale:0.85,sort:23},
     {id:'coke',cat:'drink',zh:'可乐',py:'kělè',ko:'콜라',price:15,emoji:'🥤',imageUrl:'https://lh3.googleusercontent.com/d/14LvfHn4djWpziM2DI4oAIx5zY3D7d55-=w400',scale:0.85,sort:24},
     {id:'sprite',cat:'drink',zh:'雪碧',py:'xuěbì',ko:'스프라이트',price:15,emoji:'🫧',imageUrl:'https://lh3.googleusercontent.com/d/1xZUjBv4oIxBfbc19MPB-op_rMuLnqrAy=w400',scale:0.85,sort:25}
   ],
@@ -1049,17 +1054,17 @@ async function askAI(){
     '★ 핵심 규칙 ★\n' +
     '1. 한어병음 표기 시 위의 【절대 매칭 사전】에 기재된 병음과 성조를 글자 그대로 100% 복사하여 사용하라.\n' +
     '2. 모든 한자는 전통 번체자가 아닌 본토 간화자(简体字)로만 작성하라.\n' +
-    '3. [주문문장]과 [병음]과 [해석]은 2줄로 나누어 작성하라:\n' +
-    '   - 1번째 줄: 탕 주문 (예: 我要麻辣锅和番茄锅。 / Wǒ yào málà guō hé fānqié guō. / 저는 마라탕과 토마토탕을 원합니다.)\n' +
-    '   - 2번째 줄: 재료 추가 (예: 还要羊肉、虾滑、可乐。 / Hái yào yángròu、xiāhuá、kělè. / 추가로 양고기, 새우 완자, 콜라를 주세요.)\n' +
+    '3. [주문문장]과 [병음]과 [해석]은 2줄로 나누어 작성하되, 각 줄의 시작을 반드시 "문장 1:"과 "문장 2:"로 명시하라:\n' +
+    '   - 문장 1: 탕 주문 (예: 문장 1: 我要麻辣锅和番茄锅。 / 문장 1: Wǒ yào málà guō hé fānqié guō. / 문장 1: 저는 마라탕과 토마토탕을 원합니다.)\n' +
+    '   - 문장 2: 재료 추가 (예: 문장 2: 还要羊肉、虾滑、可乐。 / 문장 2: Hái yào yángròu、xiāhuá、kělè. / 문장 2: 추가로 양고기, 새우 완자, 콜라를 주세요.)\n' +
     '4. [평가]는 자연스러운 한국어로만 다정하게 2문장 작성하라.\n' +
     '5. [추천 소스]는 디핑소스 조합을 간화자 + [병음] + (한국어) 형태로 "、" 부호로 나열하라.\n' +
     '6. [익히는 순서]는 재료를 간화자 + [병음] + (한국어) 형태로 화살표(→)로 나열하라.\n\n' +
     '아래 6개 항목 형식으로만 순수 텍스트로 답하라.\n' +
     '[평가] 다정한 말투로 이 조합의 장점을 한국어로만 2문장 작성.\n' +
-    '[주문문장]\n줄1: 탕 주문 문장(끝에 。 필수)\n줄2: 재료 추가 문장(끝에 。 필수)\n' +
-    '[병음]\n줄1: 탕 주문 한어병음(끝에 . 필수)\n줄2: 재료 추가 한어병음(끝에 . 필수)\n' +
-    '[해석]\n줄1: 탕 주문 한국어 해석\n줄2: 재료 추가 한국어 해석\n' +
+    '[주문문장]\n문장 1: 탕 주문 문장(끝에 。 필수)\n문장 2: 재료 추가 문장(끝에 。 필수)\n' +
+    '[병음]\n문장 1: 탕 주문 한어병음(끝에 . 필수)\n문장 2: 재료 추가 한어병음(끝에 . 필수)\n' +
+    '[해석]\n문장 1: 탕 주문 한국어 해석\n문장 2: 재료 추가 한국어 해석\n' +
     '[추천 소스] 소스 재료 간화자 + [한어병음] + (한국어 뜻) 형태로 "、" 부호를 사용해 배합 한 줄.\n' +
     '[익히는 순서] 재료 간화자 + [한어병음] + (한국어 뜻) 형태로 화살표(→)를 사용해 순서 한 줄.';
 
@@ -1092,14 +1097,14 @@ async function askAI(){
   }
 }
 
-/* 3단계 결과 렌더링: 문장 분리 카드 & 시트 자동 저장 */
+/* 3단계 주문서 렌더링: 문장 1 / 문장 2 분리 */
 function showResult(r, order){
   const box = $('result');
   box.style.display = 'block';
   const p = r.parsed;
 
   const parseLines = function(text){
-    const lines = text.split('\n').map(function(l){ return l.replace(/^줄[12]:\s*/, '').trim(); }).filter(Boolean);
+    const lines = text.split('\n').map(function(l){ return l.replace(/^문장\s*[12]:\s*/, '').trim(); }).filter(Boolean);
     return [lines[0] || '', lines[1] || ''];
   };
 
@@ -1110,27 +1115,27 @@ function showResult(r, order){
   box.innerHTML =
     '<div style="font-size:16px; color:var(--line-brown); margin-bottom:4px;">🎉 셰프의 맞춤 주문서 (총 ¥' + order.total + ')</div>' +
     
-    /* 1문장: 탕 베이스 주문 카드 */
+    /* 문장 1: 탕 베이스 주문 카드 */
     '<div class="sentence-card">' +
-      '<span class="tag-badge">🍲 1단계: 탕 주문하기</span>' +
+      '<span class="tag-badge">🍲 문장 1: 탕 주문하기</span>' +
       '<div class="zh" lang="zh-CN" id="zh_1">' + sZh[0] + '</div>' +
       '<div class="py" id="py_1">' + sPy[0] + '</div>' +
       '<div class="ko">' + sKo[0] + '</div>' +
       '<div class="row-actions">' +
-        '<button class="btn" onclick="playWord(\'' + sZh[0].replace(/'/g, "\\'") + '\')">🔊 1문장 듣기</button>' +
+        '<button class="btn" onclick="playWord(\'' + sZh[0].replace(/'/g, "\\'") + '\')">🔊 문장 1 듣기</button>' +
         '<button class="btn primary" onclick="toggleVoicePractice(1, \'' + sZh[0].replace(/'/g, "\\'") + '\', this)">🎙️ 따라 말해보기</button>' +
       '</div>' +
       '<div class="mic-out" id="micOut_1"></div>' +
     '</div>' +
 
-    /* 2문장: 재료 추가 주문 카드 */
+    /* 문장 2: 재료 추가 주문 카드 */
     '<div class="sentence-card">' +
-      '<span class="tag-badge">🥢 2단계: 재료 추가하기</span>' +
+      '<span class="tag-badge">🥢 문장 2: 재료 추가하기</span>' +
       '<div class="zh" lang="zh-CN" id="zh_2">' + sZh[1] + '</div>' +
       '<div class="py" id="py_2">' + sPy[1] + '</div>' +
       '<div class="ko">' + sKo[1] + '</div>' +
       '<div class="row-actions">' +
-        '<button class="btn" onclick="playWord(\'' + sZh[1].replace(/'/g, "\\'") + '\')">🔊 2문장 듣기</button>' +
+        '<button class="btn" onclick="playWord(\'' + sZh[1].replace(/'/g, "\\'") + '\')">🔊 문장 2 듣기</button>' +
         '<button class="btn primary" onclick="toggleVoicePractice(2, \'' + sZh[1].replace(/'/g, "\\'") + '\', this)">🎙️ 따라 말해보기</button>' +
       '</div>' +
       '<div class="mic-out" id="micOut_2"></div>' +
