@@ -345,37 +345,6 @@ button.btn:disabled { opacity: 0.5; cursor: default; }
 }
 .card.in .chk { display: block; }
 
-/* 3단계 미니 냄비 프리뷰 */
-.mini-pot-preview {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  margin: 10px auto;
-  border-radius: 50%;
-  background: var(--pot-rim);
-  border: 4px solid #231610;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-.mini-broth {
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-}
-.mini-broth .half { flex: 1; position: relative; }
-.mini-broth .divider {
-  position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; margin-left: -3px;
-  background: #c5b49d; z-index: 3;
-}
-.mini-chunk {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 32px; height: 32px;
-  z-index: 10;
-}
-.mini-chunk img { width: 100%; height: 100%; object-fit: contain; }
-
 /* 3단계 주문서 & 문장별 개별 카드 UI */
 .customer-card {
   max-width: 760px; margin: 0 auto; background: #fff;
@@ -417,7 +386,6 @@ button.btn:disabled { opacity: 0.5; cursor: default; }
   color: var(--text-dark) !important; margin: 0 !important; display: inline !important;
 }
 
-/* 추천 소스와 익히는 순서 내부 병음도 확실하게 Arial 폰트로 고정 */
 .section-item .py {
   font-family: Arial, Helvetica, sans-serif !important;
 }
@@ -535,15 +503,7 @@ button.btn:disabled { opacity: 0.5; cursor: default; }
   <!-- 3단계: 주문서 & 연습 -->
   <section class="view" id="v3">
     <div class="customer-card">
-      <div style="font-size:16.5px; color:var(--line-brown);">🔔 주문서 확인</div>
-      
-      <div class="mini-pot-preview" id="miniPot">
-        <div class="mini-broth">
-          <div class="half" id="miniHalfL"></div>
-          <div class="half" id="miniHalfR"></div>
-          <div class="divider"></div>
-        </div>
-      </div>
+      <div style="font-size:16.5px; color:var(--line-brown); margin-bottom:8px;">🔔 주문서 확인</div>
 
       <div class="customer-dialogue">
         <div style="font-size:32px;">👧</div>
@@ -787,8 +747,6 @@ function paintBroth(){
   const r = byId(MENU.soups, soups[1]) || l;
   $('halfL').style.background = l.color;
   $('halfR').style.background = r.color;
-  $('miniHalfL').style.background = l.color;
-  $('miniHalfR').style.background = r.color;
 }
 
 function renderTabs(){
@@ -865,10 +823,6 @@ function renderPot(){
   const olds = potEl.querySelectorAll('.chunk');
   for (let i = 0; i < olds.length; i++) olds[i].remove();
 
-  const miniPot = $('miniPot');
-  const miniOlds = miniPot.querySelectorAll('.mini-chunk');
-  for (let i = 0; i < miniOlds.length; i++) miniOlds[i].remove();
-
   const food = pot.map(function(p){
     const obj = byId(MENU.ingredients, p.id);
     return obj && !isSide(obj) ? { item: obj, side: p.side } : null;
@@ -900,13 +854,6 @@ function renderPot(){
     el.innerHTML = art(f.item);
     el.onclick = function(){ toggleItem(f.item.id); };
     potEl.appendChild(el);
-
-    const miniEl = document.createElement('div');
-    miniEl.className = 'mini-chunk';
-    miniEl.style.left = Math.max(isL ? 15 : 58, Math.min(isL ? 42 : 85, x)) + '%';
-    miniEl.style.top = Math.max(18, Math.min(82, y)) + '%';
-    miniEl.innerHTML = art(f.item);
-    miniPot.appendChild(miniEl);
   });
   renderSide();
 }
@@ -969,28 +916,28 @@ function initPotDropEvents(){
   });
 }
 
-/* 강력한 폰트 포맷터: 한자(.zh)와 한어병음/영문/괄호 내용(.py)을 완벽하게 분리하여 매칭 */
+const PINYIN_CORRECTIONS = {
+  'báizù': 'báicù',
+  'baizu': 'baicu',
+  'báizǔ': 'báicù'
+};
+
 function formatPinyinLine(text) {
   if (!text) return '';
-  // 1. 대괄호 [ ... ] 안의 내용을 .py (Arial) 폰트로 강제 감싸기
+  Object.keys(PINYIN_CORRECTIONS).forEach(function(wrong) {
+    const regex = new RegExp(wrong, 'g');
+    text = text.replace(regex, PINYIN_CORRECTIONS[wrong]);
+  });
   let res = text.replace(/\[([^\]]+)\]/g, function(match, p1) {
     return '<span class="py">[' + p1 + ']</span>';
   });
-  // 2. 혹시 대괄호가 빠진 영문/병음 패턴(예: a-z 및 성조 기호 조합)이 있다면 그것도 .py로 감싸기
-  res = res.replace(/([a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜüü'`\s]+)(?=\()/g, function(match, p1) {
-    if (p1.trim().length > 1 && !/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(p1)) {
-      return '<span class="py">' + p1 + '</span>';
-    }
-    return match;
-  });
-  // 3. 한자 영역을 .zh 폰트로 감싸기
   res = res.replace(/([\u4e00-\u9fa5]+)/g, function(match, p1) {
     return '<span class="zh" lang="zh-CN">' + p1 + '</span>';
   });
   return res;
 }
 
-/* 3단계 주문서 확인 */
+/* 3단계 주문서 확인: 미니 냄비 대신 고른 재료 이미지 칩 목록 표시 */
 function renderReceipt(){
   if (!MENU) return;
   paintBroth();
@@ -1006,7 +953,7 @@ function renderReceipt(){
           (String(it.imageUrl || '').trim() ? '<img src="' + it.imageUrl + '" referrerpolicy="no-referrer">' : it.emoji) +
           '<span class="zh" lang="zh-CN">' + it.zh + '</span> <span class="py" style="color:var(--main-orange);">[' + it.py + ']</span> ' + it.ko + ' 🔊</span>';
       }).join('')
-    : '<span style="color:#a1887f;">냄비에 담긴 재료가 없습니다.</span>';
+    : '<span style="color:#a1887f;">담긴 재료가 없습니다.</span>';
 }
 
 function playWord(t){
@@ -1017,7 +964,7 @@ function playWord(t){
   speechSynthesis.speak(u);
 }
 
-/* AI 주문 생성 호출 (Vercel Serverless API /api/chat 호출) */
+/* AI 주문 생성 호출 */
 async function askAI(){
   if (!pot.length) return toast('재료를 먼저 담아주세요!');
 
@@ -1065,7 +1012,10 @@ async function askAI(){
     '酸梅汤 -> suānméitāng -> 쏸메이탕\n' +
     '王老吉 -> wánglǎojí -> 왕라오지\n' +
     '可乐 -> kělè -> 콜라\n' +
-    '雪碧 -> xuěbì -> 스프라이트\n';
+    '雪碧 -> xuěbì -> 스프라이트\n' +
+    '蒜泥白醋 -> suànní báicù -> 마늘 식초 소스\n' +
+    '香油 -> xiāngyóu -> 참기름\n' +
+    '香菜 -> xiāngcài -> 고수\n';
 
   const prompt =
     exactDictionary +
@@ -1080,14 +1030,14 @@ async function askAI(){
     '   - 문장 1: 탕 주문 (예: 문장 1: 我要麻辣锅和番茄锅。 / 문장 1: Wǒ yào málà guō hé fānqié guō. / 문장 1: 저는 마라탕과 토마토탕을 원합니다.)\n' +
     '   - 문장 2: 재료 추가 (예: 문장 2: 还要羊肉、虾滑、可乐。 / 문장 2: Hái yào yángròu、xiāhuá、kělè. / 문장 2: 추가로 양고기, 새우 완자, 콜라를 주세요.)\n' +
     '4. [평가]는 자연스러운 한국어로만 다정하게 2문장 작성하라.\n' +
-    '5. [추천 소스]는 디핑소스 조합을 반드시 "간화자[한어병음](한국어)" 형태(예: 蒜泥白醋[suànní báizù](마늘 식초 소스))로 작성하고 여러 개일 경우 "、" 부호로 나열하라.\n' +
+    '5. [추천 소스]는 디핑소스 조합을 반드시 "간화자[한어병음](한국어)" 형태(예: 蒜泥白醋[suànní báicù](마늘 식초 소스))로 작성하고 여러 개일 경우 "、" 부호로 나열하라.\n' +
     '6. [익히는 순서]는 재료를 반드시 "간화자[한어병음](한국어)" 형태(예: 宽粉[kuānfěn](중국 당면))로 작성하고 화살표(→)로 나열하라.\n\n' +
     '아래 6개 항목 형식으로만 순수 텍스트로 답하라.\n' +
     '[평가] 다정한 말투로 이 조합의 장점을 한국어로만 2문장 작성.\n' +
     '[주문문장]\n문장 1: 탕 주문 문장(끝에 。 필수)\n문장 2: 재료 추가 문장(끝에 。 필수)\n' +
     '[병음]\n문장 1: 탕 주문 한어병음(끝에 . 필수)\n문장 2: 재료 추가 한어병음(끝에 . 필수)\n' +
     '[해석]\n문장 1: 탕 주문 한국어 해석\n문장 2: 재료 추가 한국어 해석\n' +
-    '[추천 소스] 蒜泥白醋[suànní báizù](마늘 식초 소스)、香油[xiāngyóu](참기름) 형태 한 줄.\n' +
+    '[추천 소스] 蒜泥白醋[suànní báicù](마늘 식초 소스)、香油[xiāngyóu](참기름) 형태 한 줄.\n' +
     '[익히는 순서] 宽粉[kuānfěn](중국 당면) → 牛肉[niúròu](소고기) 형태 한 줄.';
 
   try {
@@ -1119,7 +1069,7 @@ async function askAI(){
   }
 }
 
-/* 3단계 주문서 렌더링: 문장 1 / 문장 2 분리 및 Arial 병음 서체 통일 적용 */
+/* 3단계 주문서 렌더링 */
 function showResult(r, order){
   const box = $('result');
   box.style.display = 'block';
@@ -1168,7 +1118,7 @@ function showResult(r, order){
       '<div class="mic-out" id="micOut_2"></div>' +
     '</div>' +
 
-    /* 맛 평가 및 소스/순서 (Arial 폰트 완벽 통일) */
+    /* 맛 평가 및 소스/순서 */
     '<div class="section-item" style="margin-top:12px;"><b>💬 맛 평가:</b> ' + p['평가'] + '</div>' +
     '<div class="section-item"><b>🍯 추천 소스:</b> ' + sauceFormatted + '</div>' +
     '<div class="section-item"><b>⏱️ 익히는 순서:</b> ' + orderSeqFormatted + '</div>';
@@ -1186,7 +1136,7 @@ function showResult(r, order){
   box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-/* 문장별 독립 음성 인식 및 간결한 피드백, 마이크 녹음 및 내 목소리 재생 지원 */
+/* 문장별 독립 음성 인식 및 녹음/재생 */
 async function toggleVoicePractice(seq, targetText, btnEl){
   const outEl = $('micOut_' + seq);
   const myAudioBtn = $('playMyAudio_' + seq);
@@ -1271,7 +1221,6 @@ async function toggleVoicePractice(seq, targetText, btnEl){
   }
 }
 
-/* 내가 녹음한 목소리 바로 재생하기 */
 function playMyRecordedAudio(seq){
   const audioUrl = lastRecordedAudioUrl[seq];
   if (!audioUrl) {
